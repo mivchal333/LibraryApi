@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.media.Image;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SearchView;
@@ -28,7 +30,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static pl.edu.pb.wi.libraryapi.BookDetailsActivity.EXTRA_BOOK_OBJ;
+
+
 public class MainActivity extends AppCompatActivity {
+    public static final String IMAGE_URL_BASE = "http://covers.openlibrary.org/b/id/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,7 +131,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         private class BookHolder extends RecyclerView.ViewHolder {
-            private static final String IMAGE_URL_BASE = "http://covers.openlibrary.org/b/id/";
 
             private TextView bookTitleTextView;
             private TextView bookAuthorTextView;
@@ -142,6 +147,13 @@ public class MainActivity extends AppCompatActivity {
                 if (book != null && checkNullOrEmpty(book.getTitle()) && book.getAuthors() != null) {
                     bookTitleTextView.setText(book.getTitle());
                     bookAuthorTextView.setText(TextUtils.join(", ", book.getAuthors()));
+                    View itemContainer = itemView.findViewById(R.id.book_item_container);
+                    itemContainer.setOnClickListener(v -> {
+                        Intent intent = new Intent(MainActivity.this, BookDetailsActivity.class);
+                        intent.putExtra(EXTRA_BOOK_OBJ, book);
+                        startActivity(intent);
+                    });
+
                     if (book.getCover() != null) {
                         Picasso.with(itemView.getContext())
                                 .load(IMAGE_URL_BASE + book.getCover() + "-S.jpg")
